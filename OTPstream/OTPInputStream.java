@@ -10,8 +10,6 @@ public class OTPInputStream  extends InputStream{
 	InputStream message;
 	InputStream key;
 	
-	/* encrypt / decrypt
-	 */
 	boolean Encrypt = true;
 	
 	
@@ -29,7 +27,9 @@ public class OTPInputStream  extends InputStream{
 	}
 	
 
-	//Encrypt
+	
+	
+	//encrypt / decrypt by value of alphabetical order
 	@Override
 	public int read() throws IOException {
 		
@@ -53,6 +53,9 @@ public class OTPInputStream  extends InputStream{
 	
 	}
 	
+	
+	
+	//encrypt / decrypt by the byte using XOR
 	public int readXOR() throws IOException{
 		int mes = message.read();
 		int ke = key.read();
@@ -71,6 +74,7 @@ public static void main(String[] args) {
 	 * Example with capital
 	 */
 	
+	System.out.println("Capital letters");
 	//message and key
 	String me = "SECRET";
 	String ny = "IJMFDD";
@@ -118,30 +122,37 @@ public static void main(String[] args) {
 	
 	System.out.println("Encrypted message: ");
 	System.out.println(encRes);
-	System.out.println("Decrypted message: ");
+	System.out.println("Decrypted encryption: ");
 	System.out.println(decRes);
+	
+	
+	
+	
+	
 	
 	
 	/*
 	 * Example with arbitrary data using XOR
 	 */
 	
-	System.out.println("XOR with arbitrary data");
-	byte[] message = {123,23};
+	System.out.println("\n\n\nXOR with arbitrary data, displayed in bits by byte ");
+	
+	
+	byte[] message = {123,23}; 
 	byte[] key = {55,22};
 	
-	System.out.println("Message: \n" + Integer.toString(message[0],2) + " " + Integer.toString(message[1],2));
-	System.out.println("Key:  \n" + Integer.toString(key[0],2) + " " + Integer.toString(key[1],2));
-	
-	byte[] encResXOR = new byte[2];
-	byte[] decResXOR = new byte[2];
 	
 	
+	System.out.println("\nMessage: ");
+	printBytes(message);
+	
+	System.out.println("\nKey: ");
+	printBytes(key);
+	
+	byte[] encResXOR = new byte[message.length];
+	byte[] decResXOR = new byte[key.length];
 	
 	OTPInputStream otpXOR = new OTPInputStream(new ByteArrayInputStream(message), new ByteArrayInputStream(key));
-	
-	
-	
 	
 	try {
 		int bite = otpXOR.readXOR();
@@ -152,34 +163,36 @@ public static void main(String[] args) {
 			place++;
 		}
 		
-	
+		//refresh inputstreams
 		otpXOR.message = new ByteArrayInputStream(encResXOR);
 		otpXOR.key.reset();
 		
-		
-	
 		bite = otpXOR.readXOR();
 		place = 0;
 		while(bite != -1){
-		decResXOR[place] = (byte) bite;
-		bite = otpXOR.readXOR();
-		place++;
-	}
+			decResXOR[place] = (byte) bite;
+			bite = otpXOR.readXOR();
+			place++;
+		}
 		
 	} catch (IOException e) {
 		e.printStackTrace();
 	}
 	
+	System.out.println("\nEncrypt: ");
+	printBytes(encResXOR);
+	System.out.println("\nDecrypt:");
+	printBytes(decResXOR);
 	
-	
-	
-	
-	
-	
-	
-	
-	System.out.println("Encrypted: \n" + Integer.toString(encResXOR[0],2) +" "+ Integer.toString(encResXOR[1],2));
-	System.out.println("Decrypted: \n" + Integer.toString(decResXOR[0],2) +" "+ Integer.toString(decResXOR[1],2));
-	
+	}
+
+
+
+	public static void printBytes(byte[] arr){
+		
+		for (int i = 0; i < arr.length; i++) {
+			System.out.print(Integer.toString(arr[i],2) + " ");
+		}
+		
 	}
 }
